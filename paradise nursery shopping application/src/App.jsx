@@ -1,18 +1,32 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LandingPage from './pages/LandingPage';
-import ProductListingPage from './pages/ProductListingPage';
-import ShoppingCartPage from './pages/ShoppingCartPage';
+import React, { useState } from 'react';
+import ProductList from './pages/ProductList';
+import AboutUs from './AboutUs';
+import './App.css';
 
 function App() {
+  const [showProductList, setShowProductList] = useState(false);
+
+  const handleStartClicked = () => {
+    setShowProductList(true);
+  };
+
   return (
-    <Router basename="/Final-Project-Paradise-Nursery-Shopping-Application">
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/products" element={<ProductListingPage />} />
-        <Route path="/cart" element={<ShoppingCartPage />} />
-      </Routes>
-    </Router>
+    <div className="app-container">
+      {!showProductList ? (
+        <div className="background-image" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="landing-content" style={{ textAlign: 'center', color: 'white', backgroundColor: 'rgba(0,0,0,0.5)', padding: '40px', borderRadius: '10px' }}>
+            <h1>Welcome to Paradise Nursery</h1>
+            <p>Where your green dreams come true</p>
+            <button className="get-started-btn" onClick={handleStartClicked} style={{ padding: '12px 24px', fontSize: '18px', cursor: 'pointer' }}>
+              Get Started
+            </button>
+          </div>
+          <AboutUs />
+        </div>
+      ) : (
+        <ProductList />
+      )}
+    </div>
   );
 }
 
