@@ -1,51 +1,32 @@
-import React, { createContext, useState, useContext } from 'react';
+import { createSlice } from '@reduxjs/toolkit';
 
-const CartContext = createContext();
-
-export const useCart = () => {
-  return useContext(CartContext);
-};
-
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-
-  const addToCart = (plant) => {
-    setCart((prevCart) => {
-      const itemIndex = prevCart.findIndex((item) => item.id === plant.id);
-      if (itemIndex > -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[itemIndex].quantity += 1;
-        return updatedCart;
+export const CartSlice = createSlice({
+  name: 'cart',
+  initialState: {
+    items: [],
+  },
+  reducers: {
+    addItem: (state, action) => {
+      const { id, name, price, thumbnail } = action.payload;
+      const existingItem = state.items.find(item => item.id === id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        state.items.push({ id, name, price, thumbnail, quantity: 1 });
       }
-      return [...prevCart, { ...plant, quantity: 1 }];
-    });
-  };
+    },
+    removeItem: (state, action) => {
+      state.items = state.items.filter(item => item.id !== action.payload);
+    },
+    updateQuantity: (state, action) => {
+      const { id, quantity } = action.payload;
+      const itemToUpdate = state.items.find(item => item.id === id);
+      if (itemToUpdate && quantity > 0) {
+        itemToUpdate.quantity = quantity;
+      }
+    },
+  },
+});
 
-  const removeFromCart = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-  };
-
-  const incrementQuantity = (id) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
-  };
-
-  const decrementQuantity = (id) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(item.quantity - 1, 1) } : item
-      )
-    );
-  };
-
-  return (
-    <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, incrementQuantity, decrementQuantity }}
-    >
-      {children}
-    </CartContext.Provider>
-  );
-};
+export const { addItem, removeItem, updateQuantity } = CartSlice.actions;
+export default CartSlice.reducer;
